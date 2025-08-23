@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Jedi421973's Shapez.io Machine Calculator</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet" />
+    <!-- Link to external CSS file -->
+    <link
+      rel="stylesheet"
+      href="./assets/css/styles.css" />
+  </head>
+  <body class="p-0">
+    <!-- Canvas for Matrix Rain background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <div
+      class="message-box"
+      id="messageBox">
+      <p id="messageText"></p>
+      <button
+        onclick="document.getElementById('messageBox').style.display = 'none'">
+        OK
+      </button>
+    </div>
+
+    <div class="main-content">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-extrabold text-center mb-8 text-red-500">
+          Jedi421973's Shapez.io Machine Calculator 🤖
+        </h1>
+        <p class="text-center text-gray-400 mb-8">
+          Calculate the number of machines needed to handle a full belt of
+          items. Adjust belt speed and machine rates to simulate upgrades!
+        </p>
+
+        <!-- Belt Speed Configuration -->
+        <div class="card mb-8">
+          <h2 class="text-2xl font-bold mb-4 text-red-400">
+            Belt Speed Configuration
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <div>
+              <label
+                for="beltSpeed"
+                class="block text-gray-300 text-sm font-bold mb-2">
+                Current Belt Speed (items/second):
+              </label>
+              <input
+                type="number"
+                id="beltSpeed"
+                value="2"
+                min="1"
+                class="input-field" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Machine Cards Container -->
+        <div
+          id="machine-cards-container"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Machine cards will be dynamically inserted here by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Link to external JavaScript file -->
+    <script src="./assets/scripts/script.js"></script>
+  </body>
+</html>
