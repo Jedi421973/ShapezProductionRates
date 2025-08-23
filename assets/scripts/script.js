@@ -2,17 +2,17 @@
 const canvas = document.getElementById("matrix-canvas");
 const ctx = canvas.getContext("2d");
 
-// Set the canvas size to the window size - executed immediately as per your working script
+// Set the canvas size to the window size - executed immediately as per the working script
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const katakana =
-  "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン";
+  "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムヨョロヲゴゾドボポヴッン";
 const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const nums = "0123456789";
 const hebrew = "בראשית ברא אלוהים את השמים ואת הארץאבגדהוזחטיכלמנסעפצקרשת"; //The hebrew for the first line in the bible is in here
+const nums = "0123456789";
 const symbols = "!@#$%^&*()+=?><}{][_-";
-const matrixCharacters = katakana + latin + hebrew + nums + symbols; // Integrated Hebrew characters
+const matrixCharacters = katakana + latin + hebrew + nums + symbols;
 
 const fontSize = 16;
 // Initial calculation of columns based on initial canvas width
@@ -57,6 +57,7 @@ function draw() {
     ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
     if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      // Use canvas.height directly
       drops[i] = 0;
     }
 
@@ -242,9 +243,8 @@ window.onload = function () {
   renderMachineCards();
   beltSpeedInput.addEventListener("input", renderMachineCards);
 
-  // --- NEW: Event listener for Upgrade buttons using event delegation ---
+  // Event listener for Upgrade buttons using event delegation
   machineCardsContainer.addEventListener("click", (event) => {
-    // Check if the clicked element or any of its parents is an 'upgrade-btn'
     const upgradeButton = event.target.closest(".upgrade-btn");
 
     if (upgradeButton && !upgradeButton.disabled) {
@@ -255,6 +255,7 @@ window.onload = function () {
           MACHINE_DATA[machineName].currentTier + 1,
           MACHINE_DATA[machineName].maxTier
         );
+
         renderMachineCards(); // Re-render to show updated values and button state
       }
     }

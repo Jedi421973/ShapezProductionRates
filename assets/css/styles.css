@@ -27,8 +27,8 @@ body {
     26,
     32,
     44,
-    0.6
-  ); /* Semi-transparent dark background for readability */
+    0
+  ); /* *** ADJUSTED: Opacity to 0.0 (fully transparent) *** */
   height: 100vh; /* Make it fill the viewport height */
   padding: 2rem;
   box-sizing: border-box; /* Include padding in height */
