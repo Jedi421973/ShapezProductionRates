@@ -12,7 +12,7 @@ const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const nums = "0123456789";
 const hebrew = "בראשית ברא אלוהים את השמים ואת הארץאבגדהוזחטיכלמנסעפצקרשת"; //The hebrew for the first line in the bible is in here
 const symbols = "!@#$%^&*()+=?><}{][_-";
-const matrixCharacters = katakana + latin + hebrew + nums + symbols;
+const matrixCharacters = katakana + latin + hebrew + nums + symbols; // Integrated Hebrew characters
 
 const fontSize = 16;
 // Initial calculation of columns based on initial canvas width
@@ -241,4 +241,22 @@ function renderMachineCards() {
 window.onload = function () {
   renderMachineCards();
   beltSpeedInput.addEventListener("input", renderMachineCards);
+
+  // --- NEW: Event listener for Upgrade buttons using event delegation ---
+  machineCardsContainer.addEventListener("click", (event) => {
+    // Check if the clicked element or any of its parents is an 'upgrade-btn'
+    const upgradeButton = event.target.closest(".upgrade-btn");
+
+    if (upgradeButton && !upgradeButton.disabled) {
+      const machineName = upgradeButton.dataset.machine;
+      if (MACHINE_DATA[machineName]) {
+        // Increment tier, but not beyond maxTier
+        MACHINE_DATA[machineName].currentTier = Math.min(
+          MACHINE_DATA[machineName].currentTier + 1,
+          MACHINE_DATA[machineName].maxTier
+        );
+        renderMachineCards(); // Re-render to show updated values and button state
+      }
+    }
+  });
 };
