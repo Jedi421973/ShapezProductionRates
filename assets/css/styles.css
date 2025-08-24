@@ -71,16 +71,6 @@ body {
   width: 100%;
 }
 
-/* The tooltip styles are now completely removed */
-/*
-.tooltip-container {
-    ...
-}
-.tooltip-text {
-    ...
-}
-*/
-
 /* Custom message box styling */
 .message-box {
   position: fixed;
