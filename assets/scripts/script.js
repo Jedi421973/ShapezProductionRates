@@ -2,17 +2,17 @@
 const canvas = document.getElementById("matrix-canvas");
 const ctx = canvas.getContext("2d");
 
-// Set the canvas size to the window size - executed immediately as per the working script
+// Set the canvas size to the window size - executed immediately as per your working script
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const katakana =
   "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムヨョロヲゴゾドボポヴッン";
 const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const hebrew = "בראשית ברא אלוהים את השמים ואת הארץאבגדהוזחטיכלמנסעפצקרשת"; //The hebrew for the first line in the bible is in here
 const nums = "0123456789";
+const hebrew = "בראשית ברא אלוהים את השמים ואת הארץאבגדהוזחטיכלמנסעפצקרשת"; //The hebrew for the first line in the bible is in here
 const symbols = "!@#$%^&*()+=?><}{][_-";
-const matrixCharacters = katakana + latin + hebrew + nums + symbols;
+const matrixCharacters = katakana + latin + hebrew + nums + symbols; // Integrated Hebrew characters
 
 const fontSize = 16;
 // Initial calculation of columns based on initial canvas width
@@ -102,49 +102,79 @@ const MACHINE_DATA = {
     currentTier: 1,
     maxTier: 1000,
     category: "Extraction",
-  },
+  }, // 5 extractors for 2 items/sec
   Cutter: {
     baseRate: 0.5,
     currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  },
+  }, // 4 cutters for 2 items/sec
   Rotator: {
-    baseRate: 1.0,
+    baseRate: 2.0,
     currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  },
+  }, // Corrected to 2.0 items/sec
   Painter: {
     baseRate: 2 / 6,
     currentTier: 1,
     maxTier: 1000,
     category: "Mixing & Painting",
-  },
+  }, // ~0.333 items/sec from 6 painters for 2 items/sec
   Stacker: {
     baseRate: 0.25,
     currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  },
+  }, // 8 stackers for 2 items/sec
   Merger: {
     baseRate: 1.0,
     currentTier: 1,
     maxTier: 1000,
     category: "Belts, Distributor & Tunnels",
-  },
+  }, // Handles items at belt speed
   Splitter: {
     baseRate: 1.0,
     currentTier: 1,
     maxTier: 1000,
     category: "Belts, Distributor & Tunnels",
-  },
+  }, // Handles items at belt speed
   "Color Mixer": {
     baseRate: 0.4,
     currentTier: 1,
     maxTier: 1000,
     category: "Mixing & Painting",
-  },
+  }, // 5 color mixers for 2 items/sec
+  Balancer: {
+    baseRate: 1.0,
+    currentTier: 1,
+    maxTier: 1000,
+    category: "Belts, Distributor & Tunnels",
+  }, // Balances input/output flow at belt speed
+  Combiner: {
+    baseRate: 1.0,
+    currentTier: 1,
+    maxTier: 1000,
+    category: "Cutting, Rotating & Stacking",
+  }, // Combines two items into one. Base rate of 1 combined item/sec.
+  "Smart Splitter": {
+    baseRate: 1.0,
+    currentTier: 1,
+    maxTier: 1000,
+    category: "Belts, Distributor & Tunnels",
+  }, // Advanced splitter at belt speed
+  Compactor: {
+    baseRate: 0.5,
+    currentTier: 1,
+    maxTier: 1000,
+    category: "Cutting, Rotating & Stacking",
+  }, // Creates quad shapes. Base rate of 0.5 shapes/sec.
+  Filter: {
+    baseRate: 1.0,
+    currentTier: 1,
+    maxTier: 1000,
+    category: "Cutting, Rotating & Stacking",
+  }, // Filters shapes at belt speed
 };
 
 // Get elements
@@ -198,6 +228,16 @@ function renderMachineCards() {
     );
     const machinesNeeded = Math.ceil(currentBeltSpeed / currentMachineRate);
 
+    // Calculate machines needed for the next tier
+    const nextTierMachinesNeeded = Math.ceil(
+      currentBeltSpeed /
+        calculateMachineRate(machine.baseRate, machine.currentTier + 1)
+    );
+    const nextTierText =
+      machine.currentTier < machine.maxTier
+        ? `Next Tier: ${nextTierMachinesNeeded} machines`
+        : "Max Tier Reached";
+
     card.innerHTML = `
             <div>
                 <h3 class="text-xl font-bold mb-2 text-red-300">${machineName}</h3>
@@ -209,29 +249,14 @@ function renderMachineCards() {
                 )} items/sec</span></p>
                 <p class="text-gray-400 mb-4">Machines for Full Belt: <span class="text-red-300 font-bold">${machinesNeeded}</span></p>
             </div>
-            <div class="flex items-center justify-between">
-                <div class="tooltip-container">
-                    <button class="btn upgrade-btn" data-machine="${machineName}" ${
+            <div class="flex items-center justify-center">
+                <button class="btn upgrade-btn" data-machine="${machineName}" ${
       machine.currentTier >= machine.maxTier ? "disabled" : ""
     }>
-                        Upgrade
-                    </button>
-                    <span class="tooltip-text">
-                        ${
-                          machine.currentTier < machine.maxTier
-                            ? `Next Tier (${
-                                machine.currentTier + 1
-                              }): ${Math.ceil(
-                                currentBeltSpeed /
-                                  calculateMachineRate(
-                                    machine.baseRate,
-                                    machine.currentTier + 1
-                                  )
-                              )} machines`
-                            : "Max Tier Reached"
-                        }
-                    </span>
-                </div>
+                    <span>Upgrade</span>
+                    <br>
+                    <span class="text-sm font-normal">${nextTierText}</span>
+                </button>
             </div>
         `;
     machineCardsContainer.appendChild(card);

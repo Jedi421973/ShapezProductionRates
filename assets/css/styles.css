@@ -28,7 +28,7 @@ body {
     32,
     44,
     0
-  ); /* *** ADJUSTED: Opacity to 0.0 (fully transparent) *** */
+  ); /* ADJUSTED: Opacity to 0.0 (fully transparent) */
   height: 100vh; /* Make it fill the viewport height */
   padding: 2rem;
   box-sizing: border-box; /* Include padding in height */
@@ -49,10 +49,12 @@ body {
 .btn {
   background-color: #c53030; /* Darker red as base */
   color: white;
-  padding: 0.75rem 1.5rem; /* py-3 px-6 */
+  padding: 1rem 2rem; /* Adjusted for larger button */
   border-radius: 0.5rem; /* rounded-lg */
   font-weight: 600; /* font-semibold */
   transition: background-color 0.3s ease;
+  text-align: center; /* Center the text inside the button */
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .btn:hover {
@@ -69,33 +71,15 @@ body {
   width: 100%;
 }
 
-/* Tooltip container and text styling */
+/* The tooltip styles are now completely removed */
+/*
 .tooltip-container {
-  position: relative;
-  display: inline-block;
+    ...
 }
-
 .tooltip-text {
-  visibility: hidden;
-  background-color: #333;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 10px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%; /* Position the tooltip above the button */
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.3s;
-  white-space: nowrap; /* Prevent text wrapping */
+    ...
 }
-
-.tooltip-container:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
+*/
 
 /* Custom message box styling */
 .message-box {
