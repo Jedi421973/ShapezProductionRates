@@ -175,6 +175,13 @@ const MACHINE_DATA = {
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
   }, // Filters shapes at belt speed
+  // --- NEW MACHINE ADDED ---
+  Tunnel: {
+    baseRate: 1.0,
+    currentTier: 1,
+    maxTier: 1000,
+    category: "Belts, Distributor & Tunnels",
+  }, // Allows belts to pass over/under without crossing
 };
 
 // Get elements
