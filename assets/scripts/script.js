@@ -9,10 +9,11 @@ canvas.height = window.innerHeight;
 const katakana =
   "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムヨョロヲゴゾドボポヴッン";
 const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const hebrew = "ריאןגארנרבהרֵאשִׁיתאֵלנוצרהשָׁמַיִםוהכַּדוּרהָאָרֶץ"; //The hebrew for the first line in the bible is in here as well as my name
 const nums = "0123456789";
-const hebrew = "בראשית ברא אלוהים את השמים ואת הארץאבגדהוזחטיכלמנסעפצקרשת"; //The hebrew for the first line in the bible is in here
 const symbols = "!@#$%^&*()+=?><}{][_-";
-const matrixCharacters = katakana + latin + hebrew + nums + symbols; // Integrated Hebrew characters
+// Build the Matrix Rain
+const matrixCharacters = katakana + latin + hebrew + nums + symbols;
 
 const fontSize = 16;
 // Initial calculation of columns based on initial canvas width
