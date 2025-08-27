@@ -153,9 +153,6 @@ const CATEGORY_DATA = {
       6: 6.0,
       7: 7.0,
       8: 8.0,
-      // These tiers are not in the screenshot but are the diminishing returns mentioned in the wiki.
-      // I'm using the same progression as `getMultiplierForTier` but applying it to the category as a whole.
-      // Tier 9 and above will have a different progression from the image.
     },
     maxTier: 1000,
     currentTier: 1,
@@ -303,15 +300,17 @@ function renderCategoryCards() {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-            <div class="flex items-center justify-between cursor-pointer" data-category="${category}">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-gray-600 rounded-full mr-4"></div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-400">TIER ${currentTier}</p>
-                        <h3 class="text-xl font-bold text-red-300">${category}</h3>
+            <div class="flex flex-col justify-between h-full">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-600 rounded-full mr-4"></div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-400">TIER ${currentTier}</p>
+                            <h3 class="text-xl font-bold text-red-300">${category}</h3>
+                        </div>
                     </div>
                 </div>
-                <div class="text-right">
+                <div class="text-right mt-auto">
                     <p class="text-gray-400">Speed x${currentRate.toFixed(
                       2
                     )} &#8594; x${nextRate.toFixed(2)}</p>
@@ -406,9 +405,9 @@ window.onload = function () {
   // Event listeners
   beltSpeedInput.addEventListener("input", () => {
     saveState();
-    renderCategoryCards();
   });
 
+  // Use event delegation for category cards and inputs
   categoryCardsContainer.addEventListener("click", (event) => {
     const target = event.target.closest(".card, .upgrade-btn, .input-field-sm");
     if (!target) return;
@@ -425,20 +424,23 @@ window.onload = function () {
         renderCategoryCards();
       }
     }
-    // Handle manual tier input
-    else if (target.tagName === "INPUT") {
-      target.addEventListener("change", () => {
-        const newTier = parseInt(target.value, 10);
-        if (!isNaN(newTier) && newTier > 0) {
-          CATEGORY_DATA[category].currentTier = newTier;
-          saveState();
-          renderCategoryCards();
-        }
-      });
-    }
     // Handle card click to show individual machines
-    else {
+    else if (target.classList.contains("card")) {
       renderIndividualMachineCards(category);
+    }
+  });
+
+  // Handle manual tier input with event delegation
+  categoryCardsContainer.addEventListener("input", (event) => {
+    const target = event.target.closest("input");
+    if (target && target.classList.contains("input-field-sm")) {
+      const category = target.id.replace("tier-input-", "").replace(/-/g, " ");
+      const newTier = parseInt(target.value, 10);
+      if (!isNaN(newTier) && newTier > 0) {
+        CATEGORY_DATA[category].currentTier = newTier;
+        saveState();
+        renderCategoryCards();
+      }
     }
   });
 };
