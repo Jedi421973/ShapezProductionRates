@@ -15,30 +15,6 @@
     <link
       rel="stylesheet"
       href="./assets/css/styles.css" />
-    <!--Favicon-->
-    <!-- <a href="./assets/img/favicon/favicon-96x96.png"-->
-    <link
-      rel="icon"
-      type="image/png"
-      href="./assets/img/favicon/favicon-96x96.png"
-      sizes="96x96" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="./assets/img/favicon/favicon.svg" />
-    <link
-      rel="shortcut icon"
-      href="./assets/img/favicon/favicon.ico" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="./assets/img/favicon/apple-touch-icon.png" />
-    <meta
-      name="apple-mobile-web-app-title"
-      content="Jedi421973's Shapez.io Machine Calculator" />
-    <link
-      rel="manifest"
-      href="./assets/img/favicon/site.webmanifest" />
   </head>
   <body class="p-0">
     <!-- Canvas for Matrix Rain background -->
@@ -60,7 +36,7 @@
           Jedi421973's Shapez.io Machine Calculator
           <img
             id="logo-icon"
-            src="./assets/img/shapezLogo.webp"
+            src="./assets/images/shapez_logo.png"
             alt="Shapez.io Logo"
             class="inline-block h-10 w-10 align-middle ml-2 -mt-1" />
         </h1>
@@ -91,10 +67,17 @@
           </div>
         </div>
 
-        <!-- Machine Cards Container -->
+        <!-- Categories and Machine Cards Container -->
+        <div
+          id="category-cards-container"
+          class="space-y-6">
+          <!-- Category cards will be dynamically inserted here by JavaScript -->
+        </div>
+
+        <!-- Individual Machine Cards Container (initially hidden) -->
         <div
           id="machine-cards-container"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 hidden">
           <!-- Machine cards will be dynamically inserted here by JavaScript -->
         </div>
       </div>

@@ -9,11 +9,10 @@ canvas.height = window.innerHeight;
 const katakana =
   "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムヨョロヲゴゾドボポヴッン";
 const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const hebrew = "ריאןגארנרבהרֵאשִׁיתאֵלנוצרהשָׁמַיִםוהכַּדוּרהָאָרֶץ"; //The hebrew for the first line in the bible is in here as well as my name
 const nums = "0123456789";
+const hebrew = "בראשית ברא אלוהים את השמים ואת הארץאבגדהוזחטיכלמנסעפצקרשת"; //The hebrew for the first line in the bible is in here
 const symbols = "!@#$%^&*()+=?><}{][_-";
-// Build the Matrix Rain
-const matrixCharacters = katakana + latin + hebrew + nums + symbols;
+const matrixCharacters = katakana + latin + hebrew + nums + symbols; // Integrated Hebrew characters
 
 const fontSize = 16;
 // Initial calculation of columns based on initial canvas width
@@ -71,124 +70,146 @@ setInterval(draw, 30);
 
 // --- Shapez.io Calculator Script ---
 
-/**
- * Returns the speed multiplier for a given upgrade tier, based on the provided wiki data.
- * This function incorporates the diminishing returns from the footnotes.
- * @param {number} tier - The upgrade tier.
- * @returns {number} The speed multiplier.
- */
-function getMultiplierForTier(tier) {
-  if (tier >= 1 && tier <= 8) {
-    const multipliers = [1, 1.5, 2, 3, 4, 6, 7, 8];
-    return multipliers[tier - 1];
-  } else if (tier >= 9 && tier <= 28) {
-    return 8 + 0.1 * (tier - 8);
-  } else if (tier >= 29 && tier <= 58) {
-    return 10 + 0.05 * (tier - 28);
-  } else if (tier >= 59 && tier <= 108) {
-    return 11.5 + 0.025 * (tier - 58);
-  } else if (tier >= 109 && tier <= 1000) {
-    return 12.75 + 0.0125 * (tier - 108);
-  }
-  // If tier is outside the defined range (e.g., > 1000), use the last calculated max multiplier
-  return getMultiplierForTier(1000);
-}
-
-// Base belt speed for Tier 1 (no upgrades)
-const BASE_GAME_BELT_SPEED = 2; // items/second
-
+// Redefined base rates and categories
 const MACHINE_DATA = {
-  Extractor: {
-    baseRate: 0.4,
-    currentTier: 1,
-    maxTier: 1000,
-    category: "Extraction",
-  }, // 5 extractors for 2 items/sec
+  Extractor: { baseRate: 0.4, maxTier: 1000, category: "Extraction" },
   Cutter: {
     baseRate: 0.5,
-    currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  }, // 4 cutters for 2 items/sec
+  },
   Rotator: {
     baseRate: 2.0,
-    currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  }, // Corrected to 2.0 items/sec
-  Painter: {
-    baseRate: 2 / 6,
-    currentTier: 1,
-    maxTier: 1000,
-    category: "Mixing & Painting",
-  }, // ~0.333 items/sec from 6 painters for 2 items/sec
+  },
+  Painter: { baseRate: 2 / 6, maxTier: 1000, category: "Mixing & Painting" },
   Stacker: {
     baseRate: 0.25,
-    currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  }, // 8 stackers for 2 items/sec
+  },
   Merger: {
     baseRate: 1.0,
-    currentTier: 1,
     maxTier: 1000,
     category: "Belts, Distributor & Tunnels",
-  }, // Handles items at belt speed
+  },
   Splitter: {
     baseRate: 1.0,
-    currentTier: 1,
     maxTier: 1000,
     category: "Belts, Distributor & Tunnels",
-  }, // Handles items at belt speed
+  },
   "Color Mixer": {
     baseRate: 0.4,
-    currentTier: 1,
     maxTier: 1000,
     category: "Mixing & Painting",
-  }, // 5 color mixers for 2 items/sec
+  },
   Balancer: {
     baseRate: 1.0,
-    currentTier: 1,
     maxTier: 1000,
     category: "Belts, Distributor & Tunnels",
-  }, // Balances input/output flow at belt speed
+  },
   Combiner: {
     baseRate: 1.0,
-    currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  }, // Combines two items into one. Base rate of 1 combined item/sec.
+  },
   "Smart Splitter": {
     baseRate: 1.0,
-    currentTier: 1,
     maxTier: 1000,
     category: "Belts, Distributor & Tunnels",
-  }, // Advanced splitter at belt speed
+  },
   Compactor: {
     baseRate: 0.5,
-    currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  }, // Creates quad shapes. Base rate of 0.5 shapes/sec.
+  },
   Filter: {
     baseRate: 1.0,
-    currentTier: 1,
     maxTier: 1000,
     category: "Cutting, Rotating & Stacking",
-  }, // Filters shapes at belt speed
-  // --- NEW MACHINE ADDED ---
+  },
   Tunnel: {
     baseRate: 1.0,
-    currentTier: 1,
     maxTier: 1000,
     category: "Belts, Distributor & Tunnels",
-  }, // Allows belts to pass over/under without crossing
+  },
+  Storage: {
+    baseRate: 1.0,
+    maxTier: 1000,
+    category: "Belts, Distributor & Tunnels",
+  },
 };
+
+// Data for each category, mirroring the game's upgrade screen
+const CATEGORY_DATA = {
+  "Belts, Distributor & Tunnels": {
+    tierRates: {
+      1: 1.0,
+      2: 1.5,
+      3: 2.0,
+      4: 3.0,
+      5: 4.0,
+      6: 6.0,
+      7: 7.0,
+      8: 8.0,
+      // These tiers are not in the screenshot but are the diminishing returns mentioned in the wiki.
+      // I'm using the same progression as `getMultiplierForTier` but applying it to the category as a whole.
+      // Tier 9 and above will have a different progression from the image.
+    },
+    maxTier: 1000,
+    currentTier: 1,
+  },
+  Extraction: {
+    tierRates: {
+      1: 1.0,
+      2: 1.5,
+      3: 2.0,
+      4: 3.0,
+      5: 4.0,
+      6: 6.0,
+      7: 7.0,
+      8: 8.0,
+    },
+    maxTier: 1000,
+    currentTier: 1,
+  },
+  "Cutting, Rotating & Stacking": {
+    tierRates: {
+      1: 1.0,
+      2: 1.5,
+      3: 2.0,
+      4: 3.0,
+      5: 4.0,
+      6: 6.0,
+      7: 7.0,
+      8: 8.0,
+    },
+    maxTier: 1000,
+    currentTier: 1,
+  },
+  "Mixing & Painting": {
+    tierRates: {
+      1: 1.0,
+      2: 1.5,
+      3: 2.0,
+      4: 3.0,
+      5: 4.0,
+      6: 6.0,
+      7: 7.0,
+      8: 8.0,
+    },
+    maxTier: 1000,
+    currentTier: 1,
+  },
+};
+
+const BASE_BELT_SPEED = 2.0;
 
 // Get elements
 const beltSpeedInput = document.getElementById("beltSpeed");
-const machineCardsContainer = document.getElementById(
-  "machine-cards-container"
+const categoryCardsContainer = document.getElementById(
+  "category-cards-container"
 );
 
 /**
@@ -203,94 +224,221 @@ function showMessageBox(message) {
 }
 
 /**
- * Calculates the machine rate based on its base rate and tier using official multipliers.
- * @param {number} baseRate - The actual rate of the machine at Tier 1 (x1 multiplier).
- * @param {number} tier - The current upgrade tier.
- * @returns {number} The effective rate of the machine.
+ * Loads the saved state from local storage.
  */
-function calculateMachineRate(baseRate, tier) {
-  const multiplier = getMultiplierForTier(tier);
-  return baseRate * multiplier;
+function loadState() {
+  try {
+    const savedCategories = localStorage.getItem("shapezCalculatorTiers");
+    if (savedCategories) {
+      const parsed = JSON.parse(savedCategories);
+      for (const category in parsed) {
+        if (CATEGORY_DATA[category]) {
+          CATEGORY_DATA[category].currentTier = parsed[category];
+        }
+      }
+    }
+    const savedBeltSpeed = localStorage.getItem("shapezCalculatorBeltSpeed");
+    if (savedBeltSpeed) {
+      beltSpeedInput.value = savedBeltSpeed;
+    }
+  } catch (e) {
+    console.error("Could not load from local storage:", e);
+  }
 }
 
 /**
- * Renders (or re-renders) all machine cards.
+ * Saves the current state to local storage.
  */
-function renderMachineCards() {
-  machineCardsContainer.innerHTML = ""; // Clear existing cards
-  const currentBeltSpeed = parseFloat(beltSpeedInput.value);
+function saveState() {
+  try {
+    const tiersToSave = {};
+    for (const category in CATEGORY_DATA) {
+      tiersToSave[category] = CATEGORY_DATA[category].currentTier;
+    }
+    localStorage.setItem("shapezCalculatorTiers", JSON.stringify(tiersToSave));
+    localStorage.setItem("shapezCalculatorBeltSpeed", beltSpeedInput.value);
+  } catch (e) {
+    console.error("Could not save to local storage:", e);
+  }
+}
 
+/**
+ * Calculates the speed multiplier for a given category and tier.
+ * @param {string} category - The category name.
+ * @param {number} tier - The upgrade tier.
+ * @returns {number} The speed multiplier.
+ */
+function getCategoryMultiplier(category, tier) {
+  const data = CATEGORY_DATA[category];
+  if (!data) return 1;
+
+  // Use specific tier rates if available
+  if (data.tierRates[tier]) {
+    return data.tierRates[tier];
+  }
+  // Handle the diminishing returns logic as a fallback for higher tiers
+  else if (tier > 8 && tier <= 28) {
+    return 8 + 0.1 * (tier - 8);
+  } else if (tier > 28 && tier <= 58) {
+    return 10 + 0.05 * (tier - 28);
+  } else if (tier > 58 && tier <= 108) {
+    return 11.5 + 0.025 * (tier - 58);
+  } else if (tier > 108 && tier <= 1000) {
+    return 12.75 + 0.0125 * (tier - 108);
+  }
+  return 1; // Default to 1 if tier is outside known range
+}
+
+/**
+ * Renders the top-level category cards.
+ */
+function renderCategoryCards() {
+  categoryCardsContainer.innerHTML = ""; // Clear existing cards
+  for (const category in CATEGORY_DATA) {
+    const data = CATEGORY_DATA[category];
+    const currentTier = data.currentTier;
+    const currentRate = getCategoryMultiplier(category, currentTier);
+    const nextRate = getCategoryMultiplier(category, currentTier + 1);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+            <div class="flex items-center justify-between cursor-pointer" data-category="${category}">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-gray-600 rounded-full mr-4"></div>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-400">TIER ${currentTier}</p>
+                        <h3 class="text-xl font-bold text-red-300">${category}</h3>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-gray-400">Speed x${currentRate.toFixed(
+                      2
+                    )} &#8594; x${nextRate.toFixed(2)}</p>
+                    <button class="btn upgrade-btn mt-2" data-category="${category}" ${
+      currentTier >= data.maxTier ? "disabled" : ""
+    }>
+                        <span class="text-sm">UPGRADE</span>
+                    </button>
+                    <br>
+                    <label for="tier-input-${category.replace(
+                      /\s/g,
+                      "-"
+                    )}" class="text-gray-400 text-xs mt-2 block">Manual Tier:</label>
+                    <input type="number" id="tier-input-${category.replace(
+                      /\s/g,
+                      "-"
+                    )}" value="${currentTier}" class="input-field-sm text-right mt-1 w-20" min="1">
+                </div>
+            </div>
+        `;
+    categoryCardsContainer.appendChild(card);
+  }
+}
+
+/**
+ * Calculates and renders the individual machine cards based on the selected category's tier.
+ * @param {string} category - The selected category name.
+ */
+function renderIndividualMachineCards(category) {
+  const currentBeltSpeed = parseFloat(beltSpeedInput.value);
   if (isNaN(currentBeltSpeed) || currentBeltSpeed <= 0) {
     showMessageBox("Please enter a valid belt speed greater than 0.");
     return;
   }
 
-  for (const machineName in MACHINE_DATA) {
+  const categoryMultiplier = getCategoryMultiplier(
+    category,
+    CATEGORY_DATA[category].currentTier
+  );
+  const machines = Object.keys(MACHINE_DATA).filter(
+    (name) => MACHINE_DATA[name].category === category
+  );
+
+  // Hide category cards and show machine cards
+  categoryCardsContainer.classList.add("hidden");
+  const machineCardsContainer = document.getElementById(
+    "machine-cards-container"
+  );
+  machineCardsContainer.classList.remove("hidden");
+  machineCardsContainer.innerHTML = "";
+
+  const backButton = document.createElement("button");
+  backButton.className = "btn mb-4";
+  backButton.textContent = "← Back to Categories";
+  backButton.onclick = () => {
+    machineCardsContainer.classList.add("hidden");
+    categoryCardsContainer.classList.remove("hidden");
+  };
+  machineCardsContainer.appendChild(backButton);
+
+  const title = document.createElement("h2");
+  title.className = "text-2xl font-bold mb-4 text-red-400 col-span-full";
+  title.textContent = `${category} Machines`;
+  machineCardsContainer.appendChild(title);
+
+  for (const machineName of machines) {
     const machine = MACHINE_DATA[machineName];
+    const effectiveRate = machine.baseRate * categoryMultiplier;
+    const machinesNeeded = Math.ceil(currentBeltSpeed / effectiveRate);
+
     const card = document.createElement("div");
-    card.className = "card flex flex-col justify-between"; // Added flex for layout
-
-    const currentMachineRate = calculateMachineRate(
-      machine.baseRate,
-      machine.currentTier
-    );
-    const machinesNeeded = Math.ceil(currentBeltSpeed / currentMachineRate);
-
-    // Calculate machines needed for the next tier
-    const nextTierMachinesNeeded = Math.ceil(
-      currentBeltSpeed /
-        calculateMachineRate(machine.baseRate, machine.currentTier + 1)
-    );
-    const nextTierText =
-      machine.currentTier < machine.maxTier
-        ? `Next Tier: ${nextTierMachinesNeeded} machines`
-        : "Max Tier Reached";
-
+    card.className = "card flex flex-col justify-between";
     card.innerHTML = `
             <div>
                 <h3 class="text-xl font-bold mb-2 text-red-300">${machineName}</h3>
-                <p class="text-gray-400 mb-1">Current Tier: <span class="font-semibold">${
-                  machine.currentTier
-                }</span></p>
-                <p class="text-400 mb-1">Current Rate: <span class="font-semibold">${currentMachineRate.toFixed(
+                <p class="text-gray-400 mb-1">Machines for Full Belt: <span class="text-red-300 font-bold">${machinesNeeded}</span></p>
+                <p class="text-gray-400 mb-1">Effective Rate: <span class="font-semibold">${effectiveRate.toFixed(
                   3
                 )} items/sec</span></p>
-                <p class="text-gray-400 mb-4">Machines for Full Belt: <span class="text-red-300 font-bold">${machinesNeeded}</span></p>
-            </div>
-            <div class="flex items-center justify-center">
-                <button class="btn upgrade-btn" data-machine="${machineName}" ${
-      machine.currentTier >= machine.maxTier ? "disabled" : ""
-    }>
-                    <span>Upgrade</span>
-                    <br>
-                    <span class="text-sm font-normal">${nextTierText}</span>
-                </button>
             </div>
         `;
     machineCardsContainer.appendChild(card);
   }
 }
 
-// Initial setup for calculator elements on window load
+// Initial setup on window load
 window.onload = function () {
-  renderMachineCards();
-  beltSpeedInput.addEventListener("input", renderMachineCards);
+  loadState();
+  renderCategoryCards();
+  saveState(); // Save initial or loaded state
 
-  // Event listener for Upgrade buttons using event delegation
-  machineCardsContainer.addEventListener("click", (event) => {
-    const upgradeButton = event.target.closest(".upgrade-btn");
+  // Event listeners
+  beltSpeedInput.addEventListener("input", () => {
+    saveState();
+    renderCategoryCards();
+  });
 
-    if (upgradeButton && !upgradeButton.disabled) {
-      const machineName = upgradeButton.dataset.machine;
-      if (MACHINE_DATA[machineName]) {
-        // Increment tier, but not beyond maxTier
-        MACHINE_DATA[machineName].currentTier = Math.min(
-          MACHINE_DATA[machineName].currentTier + 1,
-          MACHINE_DATA[machineName].maxTier
-        );
+  categoryCardsContainer.addEventListener("click", (event) => {
+    const target = event.target.closest(".card, .upgrade-btn, .input-field-sm");
+    if (!target) return;
 
-        renderMachineCards(); // Re-render to show updated values and button state
+    const category =
+      target.dataset.category || target.closest(".card").dataset.category;
+
+    // Handle "UPGRADE" button click
+    if (target.classList.contains("upgrade-btn") && !target.disabled) {
+      const currentTier = CATEGORY_DATA[category].currentTier;
+      if (currentTier < CATEGORY_DATA[category].maxTier) {
+        CATEGORY_DATA[category].currentTier = currentTier + 1;
+        saveState();
+        renderCategoryCards();
       }
+    }
+    // Handle manual tier input
+    else if (target.tagName === "INPUT") {
+      target.addEventListener("change", () => {
+        const newTier = parseInt(target.value, 10);
+        if (!isNaN(newTier) && newTier > 0) {
+          CATEGORY_DATA[category].currentTier = newTier;
+          saveState();
+          renderCategoryCards();
+        }
+      });
+    }
+    // Handle card click to show individual machines
+    else {
+      renderIndividualMachineCards(category);
     }
   });
 };
