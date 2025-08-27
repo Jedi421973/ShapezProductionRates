@@ -30,7 +30,7 @@ body {
     0
   ); /* ADJUSTED: Opacity to 0.0 (fully transparent) */
   height: 100vh; /* Make it fill the viewport height */
-  padding: 2rem;
+  padding: 1rem; /* ADJUSTED: Reduced padding for better fit */
   box-sizing: border-box; /* Include padding in height */
   overflow-y: auto; /* Allow vertical scrolling within this div */
 }
@@ -42,7 +42,7 @@ body {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
   padding: 1.5rem; /* p-6 */
-  margin: 1rem; /* m-4 */
+  margin: 0.5rem; /* ADJUSTED: Reduced margin for better fit */
 }
 
 /* Button styling */
