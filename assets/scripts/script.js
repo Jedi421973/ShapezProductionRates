@@ -7,7 +7,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const katakana =
-  "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムヨョロヲゴゾドボポヴッン";
+  "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン";
 const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const nums = "0123456789";
 const hebrew = "בראשית ברא אלוהים את השמים ואת הארץאבגדהוזחטיכלמנסעפצקרשת"; //The hebrew for the first line in the bible is in here
@@ -378,8 +378,13 @@ function renderIndividualMachineCards(category) {
 
   for (const machineName of machines) {
     const machine = MACHINE_DATA[machineName];
+
+    // Calculate both base and effective rates and machine counts
     const effectiveRate = machine.baseRate * categoryMultiplier;
     const machinesNeeded = Math.ceil(currentBeltSpeed / effectiveRate);
+
+    const baseRate = machine.baseRate * getCategoryMultiplier(category, 1);
+    const baseMachinesNeeded = Math.ceil(currentBeltSpeed / baseRate);
 
     const card = document.createElement("div");
     card.className = "card flex flex-col justify-between";
@@ -387,6 +392,7 @@ function renderIndividualMachineCards(category) {
             <div>
                 <h3 class="text-xl font-bold mb-2 text-red-300">${machineName}</h3>
                 <p class="text-gray-400 mb-1">Machines for Full Belt: <span class="text-red-300 font-bold">${machinesNeeded}</span></p>
+                <p class="text-gray-400 mb-1">Base Machines: <span class="text-gray-400 font-bold">${baseMachinesNeeded}</span></p>
                 <p class="text-gray-400 mb-1">Effective Rate: <span class="font-semibold">${effectiveRate.toFixed(
                   3
                 )} items/sec</span></p>
